@@ -15,6 +15,10 @@ int main(void) {
 
   // duplicate pathname in exec, i.e. execlp(pathname, arg0, .. argn) is there
   // for aliasing
+
+  // READ ABOUT Virtual Memory PAGING
+  // Why 4K pages??
+
   pid_t child_pid;
 
   // Create child process
