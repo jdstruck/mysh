@@ -1,37 +1,44 @@
-#include "mysh.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/types.h>
 #include <sys/wait.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-int main(){
-	pid_t pid;
-	int status;
-	int ret;
+int main(void)
+{
+	pid_t child_pid;
 
-	pid = fork();
+	// Create child process
+	child_pid = fork();
 
-	if (pid < 0) {
-		perror("fork failed:");
-		exit(1);
+	// Check if it was successful to create child process
+	if (child_pid == -1)
+	{
+		perror("fork unsuccessful");
+		exit(EXIT_FAILURE);
 	}
 
-	if (pid == 0) {
-		printf("This is the child\n");
-		exit(99);
-	}
-
-	if (pid > 0) {
-		printf("This is parent. The child is %d\n", pid);
-
-		ret = waitpid(pid, &status, 0);
-		if (ret < 0) {
-			perror("waitpid failed:");
-			exit(2);
+	// Parent is waiting for the child to complete its task
+	if (child_pid == 0)
+	{
+		int exec_return_value = execlp("/bin/ls", "ls", "-l", (char *)NULL);
+		if (exec_return_value == -1)
+		{
+			perror("execlp failed");
+			exit(EXIT_FAILURE);
 		}
-
-		printf("Child exigted with status %d\n", WEXITSTATUS(status));
 	}
-	return 0;
+	else
+	{
+		int wait_status;
+		pid_t terminated_child_pid = wait(&wait_status);
+		if (terminated_child_pid == -1)
+		{
+			perror("wait failure");
+			exit(EXIT_FAILURE);
+		}
+		else
+			printf("Parent: my child %d terminates.\n", terminated_child_pid);
+	}
+
+	exit(EXIT_SUCCESS);
 }
