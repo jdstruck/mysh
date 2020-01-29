@@ -20,7 +20,9 @@ int main(void)
 	// Parent is waiting for the child to complete its task
 	if (child_pid == 0)
 	{
-		int exec_return_value = execlp("/bin/ls", "ls", "-l", (char *)NULL);
+		printf("### Child ###\nCurrent PID: %d and Child PID: %d\n",
+			   getpid(), child_pid);
+		int exec_return_value = execlp("/bin/ls", "ls", (char *)NULL);
 		if (exec_return_value == -1)
 		{
 			perror("execlp failed");
@@ -29,6 +31,8 @@ int main(void)
 	}
 	else
 	{
+		printf("### Parent ###\nCurrent PID: %d and Child PID: %d\n",
+			   getpid(), child_pid);
 		int wait_status;
 		pid_t terminated_child_pid = wait(&wait_status);
 		if (terminated_child_pid == -1)
