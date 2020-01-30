@@ -11,7 +11,7 @@ int main(void) {
     getline(&lineptr, &len, stream);
     printf("Shell read this line: %s\n", lineptr);
 
-    if (*lineptr == 'x') {
+    if (*lineptr == 'x' || strcmp(lineptr, "exit")) {
       printf("exiting\n");
       exit(0);
     }
