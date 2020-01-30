@@ -1,20 +1,32 @@
 #include "mysh.h"
 
-int main(void) {
-  FILE *stream;
-  char *lineptr = NULL;
-  size_t len = MAX_LINE_LEN;
+size_t len = MAX_LINE_LEN;
+FILE *stream;
+char *lineptr = NULL;
+char **tokens;
 
+int main(void) {
   assert((stream = fdopen(STDIN_FILENO, "r")) != NULL);
   while (1) {
-    printf("jsh> ");
-    getline(&lineptr, &len, stream);
-    printf("Shell read this line: %s\n", lineptr);
-
-    if (*lineptr == 'x' || strcmp(lineptr, "exit")) {
-      printf("exiting\n");
-      exit(0);
-    }
+    printf("mysh> ");
+    read_command();
   }
   return 0;
 }
+
+int run_command() {
+
+  if (strcmp(lineptr, "x") || strcmp(lineptr, "exit")) {
+    printf("exiting\n");
+    exit(EXIT_SUCCESS);
+  }
+  return 0;
+}
+
+void read_command() {
+  getline(&lineptr, &len, stream);
+  tokenize(lineptr);
+  run_command();
+}
+
+void tokenize(char *string) { printf("Shell read this line: %s\n", lineptr); }
