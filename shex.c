@@ -68,6 +68,7 @@ void read_command() {
 
 int run_command() {
 
+  printf("strcmp(lineptr, \"exit\") = %d\n", strcmp(line, "exit"));
   if (strcmp(tokens[0], EXIT_STR) == 0)
     return EXIT_CMD;
 

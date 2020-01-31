@@ -10,7 +10,13 @@
 
 #define MAX_TOKENS 1024
 #define MAX_STRING_LEN 1024
-#define MAX_LINE_LEN 10000
+#define EXIT_STR "exit"
+#define EXIT_CMD 0
+#define UNKNOWN_CMD 99
+size_t MAX_LINE_LEN = 10000;
+FILE *stream;
+char *lineptr = NULL;
+char **tokens;
 
 void tokenize(char *);
 void read_command();
