@@ -45,4 +45,12 @@ void tokenize(char *string) {
     printf("Token %d: %s\n", token_count, tokens[token_count]);
     token_count++;
   }
+  print_tokens();
+}
+
+void print_tokens() {
+  for (int i = 0; i < sizeof(tokens); ++i)
+    printf("%s ", tokens[i]);
+
+  printf("\n");
 }

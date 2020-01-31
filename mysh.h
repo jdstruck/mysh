@@ -19,6 +19,7 @@ char *lineptr = NULL;
 char **tokens;
 
 void tokenize(char *);
+void print_tokens();
 void read_command();
 int run_command();
 
