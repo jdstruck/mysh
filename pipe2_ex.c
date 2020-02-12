@@ -33,7 +33,7 @@ int main() {
       exit(0);
     }
 
-    /* control never reaches here */
+    /* control never reaches here *
   }
 
   /* fork second child */
