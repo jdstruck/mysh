@@ -25,6 +25,7 @@ void read_command()
   tokenize(lineptr);
 }
 
+
 void tokenize(char *string)
 {
   int token_count = 0;

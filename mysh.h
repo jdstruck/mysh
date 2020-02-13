@@ -1,16 +1,18 @@
 #ifndef _MYSH_H_
 #define _MYSH_H_
+#include "myheader.h"
 
 #define MAX_TOKENS 1024
 #define MAX_STRING_LEN 1024
 #define EXIT_STR "exit"
 #define EXIT_CMD 0
 #define UNKNOWN_CMD 99
-
+#define ANOTHER 100
 size_t MAX_LINE_LEN = 10000;
 FILE *stream;
 char *lineptr = NULL;
 char **tokens, **pipe_tokens;
+
 
 // Courtesy of GNU manual on how to implement a shell
 // https://www.gnu.org/software/libc/manual/html_node/Implementing-a-Shell.html

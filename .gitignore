@@ -3,3 +3,5 @@ a.out
 20200212_550.wav
 *.wav
 *.flac
+*.o
+*.d

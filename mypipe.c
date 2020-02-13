@@ -1,10 +1,10 @@
 #include "mypipe.h"
 #include "myheader.h"
 
-int main() {
-  printf("hello");
-  mpipe();
-}
+//int main() {
+//  printf("hello");
+//  mpipe();
+//}
 
 void pipe_tokenize(char *pipe_str_p)
 {
