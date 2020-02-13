@@ -1,5 +1,5 @@
-#ifndef _MYHEADER_H
-#define _MYHEADER_H
+#ifndef _JDS_HEADER_H_
+#define _JDS_HEADER_H_
 
 #include <assert.h>
 #include <errno.h>

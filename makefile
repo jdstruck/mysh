@@ -1,9 +1,13 @@
-test: mysh
-	./mysh
-	ps -l
+src = $(wildcard *.c)
+obj = $(src:.c=.o)
 
-mysh: mysh.c
-	gcc -g -Wall -o mysh mysh.c
+CFLAGS = -Wall -Wextra
 
+LDFLAGS = -lGL -lglut -lpng -lz -lm
+
+myprog: $(obj)
+	(CC) -o $@ $^ $(LDFLAGS) $(CFLAGS)
+
+.PHONY: clean
 clean:
-	-rm mysh
+	rm -f $(obj) myprog

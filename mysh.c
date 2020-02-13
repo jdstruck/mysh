@@ -4,7 +4,6 @@
 
 int main(void)
 {
-
   lineptr = malloc(sizeof(char) * MAX_STRING_LEN);
   stream = fdopen(STDIN_FILENO, "r");
   tokens = malloc(sizeof(char *) * MAX_TOKENS);

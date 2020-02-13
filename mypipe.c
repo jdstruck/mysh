@@ -3,7 +3,7 @@
 
 int main() {
   printf("hello");
-  mypipe();
+  mpipe();
 }
 
 void pipe_tokenize(char *pipe_str_p)
@@ -12,7 +12,6 @@ void pipe_tokenize(char *pipe_str_p)
   printf("======PIPES======\n");
   while (*pipe_str_p != '\0')
   {
-
     printf("%c", *pipe_str_p);
     if (*pipe_str_p == '|')
     {
@@ -23,7 +22,7 @@ void pipe_tokenize(char *pipe_str_p)
   }
   printf("====END PIPES====\n");
 }
-void mypipe() {
+void mpipe() {
 
   int fds[2];
   char buf[30];
