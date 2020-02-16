@@ -8,13 +8,13 @@
 #define EXIT_CMD 0
 #define UNKNOWN_CMD 99
 #define ANOTHER 100
+
 size_t MAX_LINE_LEN = 10000;
 FILE *stream;
 char *lineptr = NULL;
-char **tokens, **pipe_tokens;
+char **command_tokens;
 
-
-// Courtesy of GNU manual on how to implement a shell
+// process & job structures from GNU manual "Implementing a Job Control Shell
 // https://www.gnu.org/software/libc/manual/html_node/Implementing-a-Shell.html
 typedef struct process {
   struct process *next; /* next process in pipeline */
@@ -34,10 +34,13 @@ typedef struct job {
   int stdin, stdout, stderr; /* saved i/o channels */
 } job;
 
+job *first_job = NULL;
+char **pipe_tokens;
+
 void pipe_tokenize(char *);
 void pipe_recursive();
-void tokenize(char *);
-void print_tokens();
+char **arg_tokenize(char *);
+void add_process_to_job(job *, char **);
 void read_command();
 int run_command();
 

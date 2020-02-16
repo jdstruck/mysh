@@ -21,7 +21,7 @@ mysh: $(obj) $(hdr)
 
 .PHONY: run clean cleandep cleanall
 
-run:
+run: mysh
 	./mysh
 
 clean:

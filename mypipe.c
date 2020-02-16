@@ -6,26 +6,10 @@
 //  mpipe();
 //}
 
-void pipe_tokenize(char *pipe_str_p)
-{
-  int pipe_token_count = 0;
-  printf("======PIPES======\n");
-  while (*pipe_str_p != '\0')
-  {
-    printf("%c", *pipe_str_p);
-    if (*pipe_str_p == '|')
-    {
-      printf("\n");
-    }
-    pipe_str_p++;
-    pipe_token_count++;
-  }
-  printf("====END PIPES====\n");
-}
-void mpipe() {
+void mysh_pipe() {
 
   int fds[2];
-  char buf[30];
+  //char buf[30];
   pid_t pid1, pid2, pid;
   int status, i;
 
