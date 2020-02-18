@@ -18,7 +18,7 @@ int main(void) {
 
 void read_command() {
   getline(&lineptr, &MAX_LINE_LEN, stream);
-  arg_tokenize(lineptr);
+  pipe_tokenize(lineptr);
 }
 
 void pipe_tokenize(char *pipe_str_p) {
@@ -56,7 +56,7 @@ void add_process_to_job(job *j, char **args) {
 char **arg_tokenize(char *string) {
   int arg_token_count = 0;
   char *arg_token;
-  pipe_tokenize(string);
+  //pipe_tokenize(string);
 
   while ((arg_token = strsep(&string, " \t\v\f\n\r")) != NULL) {
     printf("this_token = %s\n", arg_token);
