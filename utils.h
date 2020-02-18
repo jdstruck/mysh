@@ -3,4 +3,5 @@
 #include "myheader.h"
 
 void print_char_ptr_arr(char **);
+void print_job_queue();
 #endif

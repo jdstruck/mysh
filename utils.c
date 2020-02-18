@@ -6,3 +6,7 @@ void print_char_ptr_arr(char **char_array_p) {
 
   printf("\n");
 }
+
+void print_job_queue() {
+
+}
