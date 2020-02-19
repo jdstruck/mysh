@@ -2,16 +2,19 @@
 #include "mysh.h"
 #include "mypipe.h"
 
+
+struct job *first_job = NULL;
+
 int main(void) {
   lineptr = malloc(sizeof(char) * MAX_STRING_LEN);
   stream = fdopen(STDIN_FILENO, "r");
-  command_tokens = malloc(sizeof(char *) * MAX_TOKENS);
+  // argv = malloc(sizeof(char *) * MAX_TOKENS);
   pipe_tokens = malloc(sizeof(char *) * MAX_TOKENS);
 
   do {
     printf("mysh> ");
     read_command();
-  } while (run_command() != EXIT_CMD);
+  } while (process_jobs() != EXIT_CMD);
 
   return 0;
 }
@@ -19,61 +22,62 @@ int main(void) {
 void read_command() {
   getline(&lineptr, &MAX_LINE_LEN, stream);
   pipe_tokenize(lineptr);
+  print_job_queue(first_job);
 }
 
 void pipe_tokenize(char *pipe_str_p) {
   char *pipe_token;
-  int pipe_token_count = 0;
-  printf("======PIPES======\n");
+  // int pipe_token_count = 0;
+  printf("======PIPE TOKENIZE======\n");
   while ((pipe_token = strsep(&pipe_str_p, "|")) != NULL) {
-    printf("pipe_token = %s\n", pipe_token);
+    // printf("pipe_token = %s\n", pipe_token);
     if(*pipe_token == '\0')
       continue;
 
-    add_process_to_job(first_job, arg_tokenize(pipe_token)); 
+    char **argv = arg_tokenize(pipe_token);
+    process *p = create_process(argv);
+    add_process_to_job(first_job, p); 
 
-    pipe_tokens[pipe_token_count] = pipe_token;
-    pipe_token_count++;
+
+    //pipe_tokens[pipe_token_count] = pipe_token;
+    //pipe_token_count++;
   }
-  print_char_ptr_arr(pipe_tokens);
+  // print_char_ptr_arr(pipe_tokens);
+    // print_char_ptr_arr(first_job->first_process->argv);
   printf("====END PIPE TOKENIZE====\n");
 }
 
-void add_process_to_job(job *j, char **args) {
-  if(j == NULL) {
-    j = malloc(sizeof(job));
-    j->first_process = NULL;
-  }
-  process *p;
-  for(p = j->first_process; p; p = p->next) {
-    if(p == NULL) {
-      p = malloc(sizeof(process));
-      p->argv = args;
-    }
-  }
-}
 
 char **arg_tokenize(char *string) {
   int arg_token_count = 0;
   char *arg_token;
+  char **argv = malloc(sizeof(char *) * MAX_TOKENS);
   //pipe_tokenize(string);
 
   while ((arg_token = strsep(&string, " \t\v\f\n\r")) != NULL) {
-    printf("this_token = %s\n", arg_token);
+    // printf("this_token = %s\n", arg_token);
     if (*arg_token == '\0')
       continue;
 
-    command_tokens[arg_token_count] = arg_token;
+    argv[arg_token_count] = arg_token;
     arg_token_count++;
   }
-  print_char_ptr_arr(command_tokens);
-  return command_tokens;
+  // print_char_ptr_arr(argv);
+  return argv;
 }
 
-int run_command() {
-  if (strcmp(command_tokens[0], "exit") == 0 ||
-      strcmp(command_tokens[0], "x") == 0 || 
-      strcmp(command_tokens[0], "q") == 0) {
+int process_jobs() {
+  // process *p = first_job->first_process;
+  // for(; p != NULL; p = p->next) {
+  //   // printf("%s", p->argv);
+  // }
+  return 1;
+}
+
+int run_command(char **argv) {
+  if (strcmp(argv[0], "exit") == 0 ||
+      strcmp(argv[0], "x") == 0 || 
+      strcmp(argv[0], "q") == 0) {
     return EXIT_CMD;
   }
 
@@ -85,7 +89,7 @@ int run_command() {
   }
 
   if (child_pid == 0) {
-    int exec_return_value = execvp(command_tokens[0], command_tokens);
+    int exec_return_value = execvp(argv[0], argv);
     if (exec_return_value == -1) {
       perror("execvp");
       exit(EXIT_FAILURE);
@@ -105,3 +109,4 @@ int run_command() {
 
   return UNKNOWN_CMD;
 }
+

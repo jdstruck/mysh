@@ -7,7 +7,7 @@ dep = $(obj:.o=.d)
 
 CC = gcc
 LDFLAGS = -lm
-CFLAGS = -Wall -Wextra
+CFLAGS = -Wall -Wextra -g
 
 mysh: $(obj) $(hdr)
 	$(CC) -o $@ $^ $(LDFLAGS) $(CFLAGS)
@@ -19,7 +19,10 @@ mysh: $(obj) $(hdr)
 %.d: %.c
 	@$(CC) $(CFLAGS) $< -MM -MT $(@:.d=.o) >$@
 
-.PHONY: run clean cleandep cleanall
+.PHONY: run clean cleandep cleanall gdb
+
+gdb: mysh
+	gdb mysh
 
 run: mysh
 	./mysh
