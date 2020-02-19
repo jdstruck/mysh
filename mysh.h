@@ -43,5 +43,7 @@ char **arg_tokenize(char *);
 void read_command();
 int run_command(char **);
 int process_jobs();
+void launch_process(process *, pid_t, int, int, int, int);
+void launch_job(job *, int);
 
 #endif

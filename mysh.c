@@ -109,3 +109,58 @@ int run_command(char **argv) {
     return UNKNOWN_CMD;
 }
 
+void launch_process(process *p, pid_t pgid, int infile, int outfile, int errfile, int foreground) {
+    pid_t pid = getpid();
+    if (pgid == 0) pgid = pid;
+    setpgid (pid, pgid);
+
+    if(infile != STDIN_FILENO) {
+        dup2(infile, STDIN_FILENO);
+        close(infile);
+    }
+    if (outfile != STDOUT_FILENO) {
+        dup2(outfile, STDOUT_FILENO);
+        close(outfile);
+    }
+    if(errfile != STDERR_FILENO) {
+        dup2(errfile, STDERR_FILENO);
+        close(errfile);
+    }
+    execvp(p->argv[0], p->argv);
+    perror("execvp");
+    exit(1);
+}
+
+void launch_job(job *j, int foreground){
+    process *p;
+    pid_t pid;
+    int mypipe[2], infile, outfile;
+
+    infile = j->stdin;    
+    for(p = j->first_process; p; p = p->next) {
+        if (p->next) {
+            if (pipe(mypipe) <0) {
+                perror("pipe");
+                exit(1);
+            }
+            outfile = mypipe[1];
+        } else {
+            outfile = j->stdout;
+        }
+        
+        pid = fork();
+        if(pid == 0) {
+            launch_process(p, j->pgid, infile, outfile, j->stderr, foreground);
+        } else if (pid <0) {
+            perror("fork");
+            exit(1);
+        } else {
+            p->pid = pid;
+        }
+        if(infile != j->stdin)
+            close(infile);
+        if(outfile != j->stdout)
+            close(outfile);
+        infile = mypipe[0];
+    }
+}
