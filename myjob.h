@@ -21,11 +21,12 @@ typedef struct job {
   pid_t pgid;                /* process group ID */
   char notified;             /* true if user told about stopped job */
   int stdin, stdout, stderr; /* saved i/o channels */
+  int p_count;
 } job;
 
 struct job *create_job();
 struct process *create_process(char **);
 void add_process_to_job(job *, process *);
 void print_job_queue(struct job *);
-
+int is_pipes(char *);
 #endif

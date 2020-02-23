@@ -6,6 +6,10 @@ struct job *create_job() {
     j->next = NULL;
     j->first_process = NULL;
     j->tail = NULL;
+    j->stdin = STDIN_FILENO;
+    j->stdout = STDOUT_FILENO;
+    j->stderr = STDERR_FILENO;
+    j->p_count = 0;
     return j;
 }
 
@@ -30,11 +34,13 @@ void add_process_to_job(job *j, process *p) {
     // print_job_queue(j);
 }
 
-void print_job_queue(job *j) {
-    for (job *j_curr = j; j_curr != NULL; j_curr = j_curr->next) {
-        for (process *p_curr = j_curr->first_process; p_curr != NULL; p_curr = p_curr->next) {
-            print_char_ptr_arr(p_curr->argv);
+void print_job_queue(job *j_arg) {
+    for (job *j = j_arg; j; j = j->next) {
+        int c = 0;
+        for (process *p = j->first_process; p; p = p->next) {
+            print_char_ptr_arr(p->argv);
+            ++c;
         }
-        printf("\n");
+        printf("%d process(es)\n",c);
     }
 }

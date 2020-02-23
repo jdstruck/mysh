@@ -11,4 +11,6 @@
 #include <unistd.h>
 #include "utils.h"
 
+//#define string char *
+
 #endif
