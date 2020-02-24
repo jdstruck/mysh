@@ -3,35 +3,26 @@
 src = $(wildcard *.c)
 hdr = $(wildcard *.h)
 obj = $(src:.c=.o)
-dep = $(obj:.o=.d)
+# dep = $(obj:.o=.d)
 
 CC = gcc
 LDFLAGS = -lm
-CFLAGS = -Wall -Wextra -g
+DBGFLAGS = -Wall -Wextra -g
 
 mysh: $(obj) $(hdr)
-	$(CC) -o $@ $^ $(LDFLAGS) $(CFLAGS)
+	$(CC) -o $@ $^ $(LDFLAGS) $(DBGFLAGS)
 
-#$(obj) : %.o : %.c
-	#$(CC) $(CFLAGS) -o $@ -c $<
-	#@$(CC) -M $< > $@
 
-%.d: %.c
-	@$(CC) $(CFLAGS) $< -MM -MT $(@:.d=.o) >$@
-
-.PHONY: run clean cleandep cleanall gdb
+.PHONY: run clean gdb mem
 
 gdb: mysh
 	gdb mysh
+
+mem: mysh
+	valgrind --leak-check=full ./mysh
 
 run: mysh
 	./mysh
 
 clean:
 	rm -f $(obj) mysh
-
-cleandep:
-	rm -f $(dep)
-
-cleanall:
-	rm -f $(obj) $(dep) mysh

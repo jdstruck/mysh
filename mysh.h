@@ -1,7 +1,7 @@
 #ifndef _MYSH_H_
 #define _MYSH_H_
 #include "myheader.h"
-#include "myjob.h"
+// #include "myjob.h"
 
 #define MAX_TOKENS 1024
 #define MAX_STRING_LEN 1024
@@ -15,6 +15,34 @@ FILE *stream;
 char *lineptr = NULL;
 char **pipe_tokens;
 
+// process & job structs from GNU manual "Implementing a Job Control Shell"
+// https://www.gnu.org/software/libc/manual/html_node/Implementing-a-Shell.html
+typedef struct process {
+  struct process *next; /* next process in pipeline */
+  char **argv;          /* command line args for exec */
+  pid_t pid;            /* process id */
+  char completed;       /* true if process has completed */
+  char stopped;         /* true if process has stopped */
+  int status;           /* reported status value */
+} process;
+
+typedef struct job {
+  struct job *next;          /* next active job */
+  char *command;             /* command line, used for messages */
+  process *first_process;    /* list of process in this job */
+  process *tail;             /* last process in job (tail==first_process if only one) */
+  pid_t pgid;                /* process group ID */
+  char notified;             /* true if user told about stopped job */
+  int stdin, stdout, stderr; /* saved i/o channels */
+  int p_count;
+} job;
+
+struct job *create_job();
+struct process *create_process(char **);
+void add_process_to_job(job *, process *);
+void print_job_queue(struct job *);
+int pipe_count(char *);
+
 void pipe_tokenize(char *);
 void pipe_recursive();
 char **arg_tokenize(char *);
@@ -23,5 +51,6 @@ int run_command(char **);
 int process_jobs();
 void launch_process(process *, int, int, int);
 int launch_job(job *);
+int cd(char **);
 
 #endif
