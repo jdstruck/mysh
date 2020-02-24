@@ -31,41 +31,42 @@ void launch_process(process *p, pid_t pgid, int infile, int outfile, int errfile
     if(infile != STDIN_FILENO) {
         dup2(infile, STDIN_FILENO);
         close(infile); 
-        printf("launch_process: infile != STDIN_FILENO\n");
+        // printf("launch_process: infile != STDIN_FILENO\n");
     }
     if (outfile != STDOUT_FILENO) {
         dup2(outfile, STDOUT_FILENO);
         close(outfile);
-        printf("launch_process: infile != STDOUT_FILENO\n");
+        // printf("launch_process: infile != STDOUT_FILENO\n");
     }
     if(errfile != STDERR_FILENO) {
-        printf("launch_process: infile != STDERR_FILENO\n");
+        // printf("launch_process: infile != STDERR_FILENO\n");
         dup2(errfile, STDERR_FILENO);
         close(errfile);
-    }https://github.com/jdstruck/simple-c-shell/blob/master/simple-c-shell.c
+    }
     //printf("end of launch_process");
-    execvp(p->argv[0], p->argv);
-    perror("execvp");
-    exit(1);
+    if(execvp(p->argv[0], p->argv) == -1) {
+        perror("exevp");
+        exit(1);
+    }
 }
 
 int launch_job(job *j, int foreground){
     pid_t pid;
     int mypipe[2], infile, outfile;
-    if(j->first_process) {
-        printf("printf job queue\n");
-        print_job_queue(first_job);
-        printf("end printf job queue\n");
-    } else printf("no processes");
+    // if(j->first_process) {
+        // printf("printf job queue\n");
+        // print_job_queue(first_job);
+        // printf("end printf job queue\n");
+    // } else printf("no processes");
 
     infile = j->stdin;
     process *p = j->first_process;
     int process_counter = 0;
     for(; p; p = p->next) {
-        printf("process %d\n", process_counter+1);
+        // printf("process %d\n", process_counter+1);
         // print_char_ptr_arr(p->argv);
         if (p->next) {
-            printf("p->next exists\n");
+            // printf("p->next exists\n");
             if (pipe(mypipe) <0) {
                 perror("pipe");
                 exit(1);
@@ -98,11 +99,11 @@ int launch_job(job *j, int foreground){
             perror("wait");
             exit(EXIT_FAILURE);
         } else {
-            printf("\nParent: my child %d terminates.\n", terminated_child_pid);
+            // printf("\nParent: my child %d terminates.\n", terminated_child_pid);
         }
     }
     first_job = NULL;
-    printf("end of launch job\n");
+    // printf("end of launch job\n");
     return 1;
 }
 void read_command() {
@@ -163,7 +164,7 @@ int process_jobs() {
     if(strlen(lineptr) <= 1) {
         return 1;
     }
-    printf("pipe count: %d\n", pipe_count(lineptr));
+    // printf("pipe count: %d\n", pipe_count(lineptr));
     // If pipes detected
     if(pipe_count(lineptr) > 0) {
         pipe_tokenize(lineptr);
@@ -188,7 +189,7 @@ int process_jobs() {
 
 int pipe_count(char *argv) {
     int count = 0;
-    for(int i = 0; argv[i] != NULL; ++i) {
+    for(int i = 0; argv[i]; ++i) {
        if(argv[i] == '|') ++count;
     }
     return count;
@@ -211,8 +212,9 @@ int run_command(char **argv) {
     }
 
     if (child_pid == 0) {
-        int exec_return_value = execvp(argv[0], argv);
-        if (exec_return_value == -1) {
+        // int exec_return_value = execvp(argv[0], argv);
+        if (execvp(argv[0], argv) == -1) {
+        // if (exec_return_value == -1) {
             perror("execvp");
             exit(EXIT_FAILURE);
         }

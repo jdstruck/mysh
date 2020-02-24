@@ -28,5 +28,5 @@ struct job *create_job();
 struct process *create_process(char **);
 void add_process_to_job(job *, process *);
 void print_job_queue(struct job *);
-int is_pipes(char *);
+int pipe_count(char *);
 #endif
