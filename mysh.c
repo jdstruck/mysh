@@ -1,7 +1,7 @@
 #include "myheader.h" 
 #include "mysh.h"
+#include <time.h>
 // #include "mypipe.h"
-
 
 struct job *first_job = NULL;
 
@@ -25,7 +25,7 @@ int main(void) {
     return 0;
 }
 
-void launch_process(process *p, pid_t pgid, int infile, int outfile, int errfile, int foreground) {
+void launch_process(process *p, int infile, int outfile, int errfile) {
     if(infile != STDIN_FILENO) {
         dup2(infile, STDIN_FILENO);
         close(infile); 
@@ -34,17 +34,17 @@ void launch_process(process *p, pid_t pgid, int infile, int outfile, int errfile
         dup2(outfile, STDOUT_FILENO);
         close(outfile);
     }
-    if(errfile != STDERR_FILENO) {
-        dup2(errfile, STDERR_FILENO);
-        close(errfile);
-    }
+    // if(errfile != STDERR_FILENO) {
+    //     dup2(errfile, STDERR_FILENO);
+    //     close(errfile);
+    // }
     if(execvp(p->argv[0], p->argv) == -1) {
         perror("exevp");
         exit(1);
     }
 }
 
-int launch_job(job *j, int foreground){
+int launch_job(job *j){
     pid_t pid;
     int mypipe[2], infile, outfile;
     infile = j->stdin;
@@ -63,7 +63,7 @@ int launch_job(job *j, int foreground){
         
         pid = fork();
         if(pid == 0) {
-            launch_process(p, j->pgid, infile, outfile, j->stderr, foreground);
+            launch_process(p, infile, outfile, j->stderr);
         } else if (pid <0) {
             perror("fork");
             exit(1);
@@ -77,9 +77,10 @@ int launch_job(job *j, int foreground){
         infile = mypipe[0];
         ++process_counter;
     }
+    fflush(stdout);
     for(int i = 0; i < pipe_count(lineptr)+1; ++i) {
         int wait_status;
-        if (wait(&wait_status) == -1) {
+        if (waitpid(-1,&wait_status,WUNTRACED) == -1) {
             perror("wait");
             exit(EXIT_FAILURE);
         }
@@ -152,11 +153,11 @@ int process_jobs() {
     }
     
     // If pipes detected
-    if(pipe_count(lineptr) > 0) {
+    if(pipe_count(lineptr) >= 0) {
         pipe_tokenize(lineptr);
-        return launch_job(first_job, 1);
+        return launch_job(first_job);
     } else {
-        return run_command(arg_tokenize(lineptr));
+        // return run_command(arg_tokenize(lineptr));
     } 
   
     return 1;
