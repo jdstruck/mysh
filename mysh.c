@@ -77,26 +77,41 @@ int launch_job(job *j){
             }
             outfile = mypipe[1];
         } else {
+            // This is the last command in the pipeline, or only command if no pipes
 
-            // Check if last command redirects output to file
-            int strpos = find_str_in_argv(p->argv, ">");
-            if(strpos > 0){
-                char *outfilename = p->argv[strpos+1];
-                char *args_aux[MAX_TOKENS];
-                p->argv[strpos] = NULL;
-                int redirfile;
+            // Check if command redirects output to file
+            int gtpos = find_str_in_argv(p->argv, ">");
+            if(gtpos > 0) {
+                char *outfilename = p->argv[gtpos+1];
+                p->argv[gtpos] = NULL;
+                int redir_outfile;
 
-                // Process redirection
-                if((redirfile = open(outfilename, O_CREAT|O_TRUNC|O_WRONLY, 0600)) < 0) {
+                // Open output file for redirection, save file descriptor
+                if((redir_outfile = open(outfilename, O_CREAT|O_TRUNC|O_WRONLY, 0600)) < 0) {
                     perror(outfilename);
                     exit(1);
                 } 
-                outfile = redirfile;
+                outfile = redir_outfile;
             } else {
 
                 // Otherwise output to stdout
                 outfile = j->stdout;
             }
+
+            // Check if command redirects output to file
+            int ltpos = find_str_in_argv(p->argv, "<");
+            if(ltpos > 0) {
+                char *infilename = p->argv[ltpos+1];
+                p->argv[ltpos] = NULL;
+                int redir_infile;
+
+                // Open input file for redirection, save file descriptor
+                if((redir_infile = open(infilename, O_RDONLY, 0600)) < 0) {
+                    perror(infilename);
+                    exit(1);
+                }
+                infile = redir_infile;
+            } 
         }
         
         pid = fork();
@@ -108,7 +123,7 @@ int launch_job(job *j){
 
         } else if(pid == 0) {
 
-            // This is the child processs
+            // This is the child process, run command
             launch_process(p, infile, outfile, j->stderr);
 
         } else {
