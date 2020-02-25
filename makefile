@@ -1,4 +1,4 @@
-# à la http://nuclear.mutantstargoat.com/articles/make/
+# adapted from http://nuclear.mutantstargoat.com/articles/make/
 
 src = $(wildcard *.c)
 hdr = $(wildcard *.h)
@@ -11,7 +11,6 @@ DBGFLAGS = -Wall -Wextra -g
 
 mysh: $(obj) $(hdr)
 	$(CC) -o $@ $^ $(LDFLAGS) $(DBGFLAGS)
-
 
 .PHONY: run clean gdb mem
 
