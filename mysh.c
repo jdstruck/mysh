@@ -176,6 +176,13 @@ void launch_process(process *p, int infile, int outfile, int errfile) {
 }
 
 void cleanup() {
+    for (job *j = first_job; j; j = j->next) {
+        for (process *p = j->first_process; p; p = p->next) {
+            free(p);
+            // p = NUL;
+        }
+    }
+    free(first_job);
     first_job = NULL;
 }
 
