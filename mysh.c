@@ -1,14 +1,14 @@
 // #include "myheader.h" 
 #include "mysh.h"
 #include <time.h>
-// #include "mypipe.h"
+// #include "fds.h"
 struct job *first_job = NULL;
 // setbuf(stdout, 0);
 
 void prompt(){
-	char hostn[1204] = "";
-	gethostname(hostn, sizeof(hostn));
-	printf("%s@%s > ", getenv("LOGNAME"), hostn);
+    char hostn[1204] = "";
+    gethostname(hostn, sizeof(hostn));
+    printf("%s@%s > ", getenv("LOGNAME"), hostn);
 }
 
 int main(void) {
@@ -49,7 +49,7 @@ int process_jobs() {
 
 int launch_job(job *j){
     pid_t pid;
-    int mypipe[2], infile, outfile;
+    int fds[2], infile, outfile;
     infile = j->stdin;
     process *p = j->first_process;
 
@@ -73,6 +73,7 @@ int launch_job(job *j){
             }
 
             if(find_str_in_argv(p->argv, "<") > 0 && p == j->first_process) {
+
                 // Check if command redirects input from file
                 int ltpos = find_str_in_argv(p->argv, "<");
                 if(ltpos > 0) {
@@ -87,17 +88,17 @@ int launch_job(job *j){
                     }
                     infile = redir_infile;
                 } 
-            } else {
-                fprintf(stderr, "Invalid command: input redirection is not supported after the first command.\n")
-                cleanup();
-                return RETURN_TO_PROMPT;
             }
-            if (pipe(mypipe) <0) {
+
+            // Create pipe with fds as file descriptor array
+            if (pipe(fds) <0) {
                 perror("pipe");
                 exit(1);
             }
-            outfile = mypipe[1];
+
+            outfile = fds[1];
         } else {
+
             // This is the last command in the pipeline, or only command if no pipes
 
             // Check if command redirects output to file
@@ -159,7 +160,7 @@ int launch_job(job *j){
             close(infile);
         if(outfile != j->stdout)
             close(outfile);
-        infile = mypipe[0];
+        infile = fds[0];
     }
     
     fflush(stdout);
@@ -289,16 +290,16 @@ void print_job_queue(job *j_arg) {
 }
 
 int cd(char **argv) {
-	if (argv[1] == NULL) {
-		chdir(getenv("HOME")); 
-		return RETURN_TO_PROMPT;
-	} else { 
-		if (chdir(argv[1]) == -1) {
-			printf(" %s: no such directory\n", argv[1]);
+    if (argv[1] == NULL) {
+        chdir(getenv("HOME")); 
+        return RETURN_TO_PROMPT;
+    } else { 
+        if (chdir(argv[1]) == -1) {
+            printf(" %s: no such directory\n", argv[1]);
             return -1;
-		}
-	}
-	return RETURN_TO_PROMPT;
+        }
+    }
+    return RETURN_TO_PROMPT;
 }
 
 void print_char_ptr_arr(char **argv) {

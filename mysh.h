@@ -15,8 +15,8 @@ FILE *stream;
 char *lineptr = NULL;
 char **pipe_tokens;
 
-// Process & job structs and job control procedures adapted
-// from GNU manual "Implementing a Job Control Shell"
+// Process & job structs and job control procedures adapted from
+// GNU manual "Implementing a Job Control Shell"
 // https://www.gnu.org/software/libc/manual/html_node/Implementing-a-Shell.html
 typedef struct process {
     struct process *next; /* next process in pipeline */
