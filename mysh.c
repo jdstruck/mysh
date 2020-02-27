@@ -71,7 +71,7 @@ int launch_job(job *j){
                 cleanup();
                 return RETURN_TO_PROMPT;
             }
-            
+
             if(find_str_in_argv(p->argv, "<") > 0 && p == j->first_process) {
                 // Check if command redirects input from file
                 int ltpos = find_str_in_argv(p->argv, "<");
@@ -87,7 +87,11 @@ int launch_job(job *j){
                     }
                     infile = redir_infile;
                 } 
-            } 
+            } else {
+                fprintf(stderr, "Invalid command: input redirection is not supported after the first command.\n")
+                cleanup();
+                return RETURN_TO_PROMPT;
+            }
             if (pipe(mypipe) <0) {
                 perror("pipe");
                 exit(1);
