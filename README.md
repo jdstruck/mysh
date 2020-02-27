@@ -14,11 +14,13 @@ Pipes should work as expected for an arbitrary number of commands in the pipelin
 
 *Simple* input and output redirection is supported.
 
+#### Output redirection
 Output redirection works if the `>` is placed before a filename after a single command -- `ls > out.txt` -- or if placed at the end of a pipeline -- `ls | grep text > out.txt`.
 
-Input redirection will not work in a pipeline, but will work with a single command, and in conjunction with output redirection if applicable. 
+Output redirection will not work for a command on the left side, or middle, of a pipe.
 
-Neither input or output redirection will work for a command on the left side, or middle, of a pipe. 
+#### Input redirection
+Input redirection is supported if the `<` is placed before a filename after a single command -- `grep text < text.txt` -- or in the first command of a pipeline -- `grep text < text.txt | wc -l`. Input redirection will not work in the middle or at the end of a pipeline. 
 
 ### Indentification of invalid combinations
 
