@@ -71,6 +71,23 @@ int launch_job(job *j){
                 cleanup();
                 return RETURN_TO_PROMPT;
             }
+            
+            if(find_str_in_argv(p->argv, "<") > 0 && p == j->first_process) {
+                // Check if command redirects input from file
+                int ltpos = find_str_in_argv(p->argv, "<");
+                if(ltpos > 0) {
+                    char *infilename = p->argv[ltpos+1];
+                    p->argv[ltpos] = NULL;
+                    int redir_infile;
+    
+                    // Open input file for redirection, save file descriptor
+                    if((redir_infile = open(infilename, O_RDONLY, 0600)) < 0) {
+                        perror(infilename);
+                        exit(1);
+                    }
+                    infile = redir_infile;
+                } 
+            } 
             if (pipe(mypipe) <0) {
                 perror("pipe");
                 exit(1);
@@ -98,7 +115,7 @@ int launch_job(job *j){
                 outfile = j->stdout;
             }
 
-            // Check if command redirects output to file
+            // Check if command redirects input from file
             int ltpos = find_str_in_argv(p->argv, "<");
             if(ltpos > 0) {
                 char *infilename = p->argv[ltpos+1];
