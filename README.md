@@ -20,4 +20,4 @@ Input redirection is supported if the `<` is placed before a filename after a si
 Input and output redirection can be combined in the same command under certain conditions. In a single command, i.e. without pipes, the command can read from a file, then output to another file -- `grep text < text.txt > grep_text.txt`. In a pipeline, the first command can read from a file, and the last command can output to a file -- `grep text < text.txt | wc -l > wc_text.txt` -- however as indicated above, input redirection anywhere but the first command, and output redirection anywhere but the last command, is invalid.
 
 ### Indentification of invalid combinations
-Some invalid combinations are handled by the system, including more than one input or output redirection in a pipeline, and input or output redirection to the left or in the middle of a pipeline.
+Some invalid combinations are handled by the system, including more than one input or output redirection in a pipeline, and as noted above, input redirection anywhere by the first command, and output redirection anywhere by the last command.
