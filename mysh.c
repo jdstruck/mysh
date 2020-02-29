@@ -143,14 +143,32 @@ int launch_job(job *j){
             perror("fork");
             exit(1);
 
+        // This is the child process, run command
         } else if(pid == 0) {
 
-            // This is the child process, run command
-            launch_process(p, infile, outfile, j->stderr);
 
+            // If fork fd[0] (infile) is not stdin, read from pipe or redirect
+            if(infile != STDIN_FILENO) {
+                dup2(infile, STDIN_FILENO);
+                close(infile); 
+            }
+
+            // If fork fd[1] (outfile) is not stdout, write to pipe or redirect
+            if(outfile != STDOUT_FILENO) {
+                dup2(outfile, STDOUT_FILENO);
+                close(outfile);
+            }
+
+            // Run command, if error, exit program
+            if(execvp(p->argv[0], p->argv) == -1) {
+                perror("exevp");
+                exit(1);
+            }
+
+        // This is the parent process
         } else {
 
-            // This is the parent process
+            // Set process struct pid to fork pid
             p->pid = pid;
 
         }
@@ -163,7 +181,7 @@ int launch_job(job *j){
         infile = fds[0];
     }
     
-    fflush(stdout);
+    // fflush(stdout);
 
     // Wait for child processes to finish
     for(int i = 0; i < j->p_count; ++i) {
@@ -177,31 +195,10 @@ int launch_job(job *j){
     return RETURN_TO_PROMPT;
 }
 
-void launch_process(process *p, int infile, int outfile, int errfile) {
-
-    if(infile != STDIN_FILENO) {
-        dup2(infile, STDIN_FILENO);
-        close(infile); 
-    }
-    if(outfile != STDOUT_FILENO) {
-        dup2(outfile, STDOUT_FILENO);
-        close(outfile);
-    }
-    if(errfile != STDERR_FILENO) {
-        dup2(errfile, STDERR_FILENO);
-        close(errfile);
-    }
-    if(execvp(p->argv[0], p->argv) == -1) {
-        perror("exevp");
-        exit(1);
-    }
-}
-
 void cleanup() {
     for (job *j = first_job; j; j = j->next) {
         for (process *p = j->first_process; p; p = p->next) {
             free(p);
-            // p = NUL;
         }
     }
     free(first_job);
@@ -254,7 +251,6 @@ struct job *create_job() {
     j->tail = NULL;
     j->stdin = STDIN_FILENO;
     j->stdout = STDOUT_FILENO;
-    j->stderr = STDERR_FILENO;
     j->p_count = 0;
     return j;
 }

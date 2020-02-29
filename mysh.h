@@ -22,19 +22,13 @@ typedef struct process {
     struct process *next; /* next process in pipeline */
     char **argv;          /* command line args for exec */
     pid_t pid;            /* process id */
-    char completed;       /* true if process has completed */
-    char stopped;         /* true if process has stopped */
-    int status;           /* reported status value */
 } process;
 
 typedef struct job {
     struct job *next;          /* next active job */
-    char *command;             /* command line, used for messages */
     process *first_process;    /* list of process in this job */
     process *tail;             /* last process in job (tail==first_process if only one) */
-    pid_t pgid;                /* process group ID */
-    char notified;             /* true if user told about stopped job */
-    int stdin, stdout, stderr; /* saved i/o channels */
+    int stdin, stdout; /* saved i/o channels */
     int p_count;
 } job;
 
@@ -51,7 +45,6 @@ char **arg_tokenize(char *);
 void read_command();
 int run_command(char **);
 int process_jobs();
-void launch_process(process *, int, int, int);
 int launch_job(job *);
 int cd(char **);
 int count_a_char(char *, char);
